@@ -1,210 +1,214 @@
-/* Cénia Surprise — script.js */
+/* Cénia Surprise — Version corrigée et améliorée */
 (() => {
   'use strict';
 
-  const find = (selectors) => {
-    for (const selector of selectors) {
-      const element = document.querySelector(selector);
-      if (element) return element;
-    }
-    return null;
-  };
+  const openButton = document.getElementById('openButton');
+  const envelope = document.getElementById('envelope');
+  const letter = document.getElementById('letter');
 
-  const findAll = (selectors) => [
-    ...new Set(
-      selectors.flatMap((s) => [...document.querySelectorAll(s)])
-    )
-  ];
+  const music = document.getElementById('backgroundMusic');
+  const musicButton = document.getElementById('musicButton');
+  const musicButtonText = document.getElementById('musicButtonText');
+  const musicStatus = document.getElementById('musicStatus');
 
-  const openButtons = findAll([
-    '[data-open-surprise]',
-    '#openSurprise',
-    '#open-surprise',
-    '#openButton',
-    '#openBtn',
-    '#openLetter',
-    '#ouvrirSurprise',
-    '#ouvrir-surprise',
-    '.open-surprise',
-    '.open-button',
-    '.btn-open',
-    '.surprise-button'
-  ]);
+  let surpriseOpened = false;
 
-  const envelope = find([
-    '[data-envelope]',
-    '#envelope',
-    '.envelope',
-    '.letter-envelope'
-  ]);
+  /*
+   * 1. OUVERTURE DE L'ENVELOPPE
+   */
 
-  const letter = find([
-    '[data-letter]',
-    '#letter',
-    '#lettre',
-    '#letterContent',
-    '#lettreContent',
-    '#surpriseContent',
-    '.letter',
-    '.lettre',
-    '.letter-content',
-    '.lettre-content',
-    '.surprise-content'
-  ]);
+  function openSurprise() {
+    if (!letter || surpriseOpened) return;
 
-  const modal = find([
-    '[data-letter-modal]',
-    '#letterModal',
-    '#letter-modal',
-    '#modalLettre',
-    '.letter-modal'
-  ]);
+    surpriseOpened = true;
 
-  const intro = find([
-    '#intro',
-    '.intro',
-    '#welcomeScreen',
-    '.welcome-screen',
-    '#landing',
-    '.landing'
-  ]);
-
-  const music = find([
-    '[data-background-music]',
-    '#backgroundMusic',
-    '#bgMusic',
-    '#music',
-    'audio'
-  ]);
-
-  const closeButtons = findAll([
-    '[data-close-letter]',
-    '#closeLetter',
-    '#close-letter',
-    '#closeModal',
-    '.close-letter',
-    '.close-modal',
-    '.letter-close'
-  ]);
-
-  function show(element) {
-    if (!element) return;
-
-    element.hidden = false;
-    element.removeAttribute('aria-hidden');
-    element.classList.remove('is-hidden');
-    element.classList.add('is-visible', 'show', 'active');
-
-    if (getComputedStyle(element).display === 'none') {
-      element.style.display = element.matches(
-        '.modal, .letter-modal, #letterModal'
-      ) ? 'flex' : 'block';
-    }
-  }
-
-  function hide(element) {
-    if (!element) return;
-
-    element.classList.remove(
-      'is-visible',
-      'show',
-      'active',
-      'is-open',
-      'open'
-    );
-
-    element.classList.add('is-hidden');
-    element.setAttribute('aria-hidden', 'true');
-    element.style.display = 'none';
-  }
-
-  function openSurprise(event) {
-    if (event?.currentTarget instanceof HTMLAnchorElement) {
-      const href = event.currentTarget.getAttribute('href');
-
-      if (href?.startsWith('#')) {
-        event.preventDefault();
-      }
-    }
-
+    // Animation de l'enveloppe.
     if (envelope) {
       envelope.classList.add('is-open', 'open', 'active');
-      envelope.setAttribute('aria-expanded', 'true');
+      envelope.setAttribute('aria-label', 'Enveloppe ouverte');
     }
 
-    if (intro) {
-      intro.classList.add('is-hidden');
-      intro.setAttribute('aria-hidden', 'true');
+    // Révéler la lettre.
+    letter.hidden = false;
+    letter.classList.remove('is-hidden');
+    letter.classList.add('is-visible', 'show', 'active');
+
+    // Mettre à jour le bouton.
+    if (openButton) {
+      openButton.setAttribute('aria-expanded', 'true');
+      openButton.innerHTML =
+        'Ta surprise est ouverte <span aria-hidden="true">♡</span>';
+
+      openButton.disabled = true;
     }
 
-    show(modal || letter);
+    // Faire apparaître la lettre puis y amener doucement le lecteur.
+    window.setTimeout(() => {
+      letter.scrollIntoView({
+        behavior: window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches ? 'auto' : 'smooth',
 
-    const target = modal || letter;
+        block: 'start'
+      });
+    }, 250);
 
-    if (target) {
-      window.setTimeout(() => {
-        target.scrollIntoView({
-          behavior: window.matchMedia(
-            '(prefers-reduced-motion: reduce)'
-          ).matches ? 'auto' : 'smooth',
-          block: 'center'
-        });
-      }, 150);
+    // Essayer de lancer la musique uniquement si le fichier existe.
+    playMusicIfAvailable();
+  }
+
+  if (openButton) {
+    openButton.addEventListener('click', openSurprise);
+  }
+
+  /*
+   * 2. MUSIQUE DE FOND
+   */
+
+  function hasMusicSource() {
+    if (!music) return false;
+
+    const source = music.querySelector('source');
+
+    return Boolean(
+      source &&
+      source.getAttribute('src') &&
+      source.getAttribute('src').trim()
+    );
+  }
+
+  async function playMusicIfAvailable() {
+    if (!music || !hasMusicSource()) {
+      if (musicStatus) {
+        musicStatus.textContent =
+          'La musique pourra être ajoutée dans le dossier du site.';
+      }
+
+      return;
     }
 
-    // Mizik la ka kòmanse apre moun nan peze bouton an.
-    if (music?.play) {
-      music.play().catch(() => {});
+    try {
+      await music.play();
+
+      if (musicButton) {
+        musicButton.setAttribute('aria-pressed', 'true');
+      }
+
+      if (musicButtonText) {
+        musicButtonText.textContent = 'Pause';
+      }
+
+      if (musicStatus) {
+        musicStatus.textContent = 'Une petite mélodie accompagne ce moment. ♫';
+      }
+    } catch {
+      // Certains navigateurs peuvent bloquer la lecture automatique.
+      if (musicStatus) {
+        musicStatus.textContent =
+          'Tu peux activer la musique avec le bouton ♫.';
+      }
     }
   }
 
-  function closeSurprise() {
-    hide(modal || letter);
+  if (musicButton) {
+    musicButton.addEventListener('click', async () => {
+      if (!music || !hasMusicSource()) {
+        if (musicStatus) {
+          musicStatus.textContent =
+            'La musique pourra être ajoutée dans le dossier du site.';
+        }
 
-    if (envelope) {
-      envelope.classList.remove('is-open', 'open', 'active');
-      envelope.setAttribute('aria-expanded', 'false');
-    }
+        return;
+      }
 
-    if (intro) {
-      intro.classList.remove('is-hidden');
-      intro.removeAttribute('aria-hidden');
-    }
-  }
+      try {
+        if (music.paused) {
+          await music.play();
 
-  // Bouton pou ouvri sipriz la.
-  openButtons.forEach((button) => {
-    button.addEventListener('click', openSurprise);
-  });
+          musicButton.setAttribute('aria-pressed', 'true');
 
-  // Bouton pou fèmen lèt la.
-  closeButtons.forEach((button) => {
-    button.addEventListener('click', closeSurprise);
-  });
+          if (musicButtonText) {
+            musicButtonText.textContent = 'Pause';
+          }
 
-  if (modal) {
-    modal.addEventListener('click', (event) => {
-      if (event.target === modal) {
-        closeSurprise();
+          if (musicStatus) {
+            musicStatus.textContent = 'La musique est en cours de lecture. ♫';
+          }
+        } else {
+          music.pause();
+
+          musicButton.setAttribute('aria-pressed', 'false');
+
+          if (musicButtonText) {
+            musicButtonText.textContent = 'Musique';
+          }
+
+          if (musicStatus) {
+            musicStatus.textContent = 'Musique en pause.';
+          }
+        }
+      } catch {
+        if (musicStatus) {
+          musicStatus.textContent =
+            'La musique ne peut pas être lancée pour le moment.';
+        }
       }
     });
   }
 
-  // Fèmen ak bouton Escape sou klavye.
-  document.addEventListener('keydown', (event) => {
-    if (
-      event.key === 'Escape' &&
-      modal?.classList.contains('is-visible')
-    ) {
-      closeSurprise();
-    }
-  });
+  /*
+   * 3. PÉTALES ROSES
+   */
 
-  // Ti patikil lumineux ki bay paj la yon efè dous.
-  function addParticles() {
+  function createPetals() {
+    const field = document.getElementById('petalField');
+
+    if (!field || field.dataset.initialized === 'true') {
+      return;
+    }
+
+    field.dataset.initialized = 'true';
+
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
+    if (reducedMotion) return;
+
+    const totalPetals = window.innerWidth < 600 ? 12 : 22;
+
+    for (let i = 0; i < totalPetals; i += 1) {
+      const petal = document.createElement('span');
+
+      petal.className = 'petal';
+
+      petal.style.left = `${Math.random() * 100}%`;
+
+      petal.style.animationDuration =
+        `${10 + Math.random() * 12}s`;
+
+      petal.style.animationDelay =
+        `${-Math.random() * 20}s`;
+
+      petal.style.setProperty(
+        '--drift',
+        `${Math.random() * 150 - 75}px`
+      );
+
+      petal.style.opacity = `${0.25 + Math.random() * 0.35}`;
+
+      field.appendChild(petal);
+    }
+  }
+
+  /*
+   * 4. PARTICULES LUMINEUSES
+   */
+
+  function createParticles() {
     if (
       document.querySelector(
-        '[data-particles], #particles, .particles, .floating-particles'
+        '[data-particles], #particles, .floating-particles'
       )
     ) {
       return;
@@ -230,34 +234,45 @@
         position: absolute;
         bottom: -18px;
         border-radius: 50%;
+
         background: radial-gradient(
           circle,
-          rgba(255,255,255,.95),
-          rgba(221,183,255,.55) 45%,
+          rgba(255,255,255,.98),
+          rgba(221,183,255,.65) 45%,
           transparent 75%
         );
-        box-shadow: 0 0 12px rgba(214,174,255,.4);
+
+        box-shadow: 0 0 12px rgba(214,174,255,.45);
+
         opacity: 0;
-        animation: ceniaFloat
-          var(--duration) linear var(--delay) infinite;
+
+        animation:
+          ceniaFloat
+          var(--duration)
+          linear
+          var(--delay)
+          infinite;
       }
 
       @keyframes ceniaFloat {
         0% {
-          transform: translate(0,0) scale(.7);
+          transform: translate3d(0, 0, 0) scale(.7);
           opacity: 0;
         }
 
         12% {
-          opacity: .58;
+          opacity: .65;
         }
 
-        82% {
+        80% {
           opacity: .35;
         }
 
         100% {
-          transform: translate(var(--drift),-110vh) scale(1.15);
+          transform:
+            translate3d(var(--drift), -110vh, 0)
+            scale(1.15);
+
           opacity: 0;
         }
       }
@@ -272,19 +287,18 @@
 
     document.head.appendChild(style);
 
-    for (let i = 0; i < 20; i += 1) {
+    const totalParticles = window.innerWidth < 600 ? 12 : 20;
+
+    for (let i = 0; i < totalParticles; i += 1) {
       const particle = document.createElement('span');
 
       particle.className = 'glow-particle';
+
+      const size = 3 + Math.random() * 5;
+
       particle.style.left = `${Math.random() * 100}%`;
-
-      particle.style.setProperty(
-        '--size',
-        `${3 + Math.random() * 5}px`
-      );
-
-      particle.style.width = 'var(--size)';
-      particle.style.height = 'var(--size)';
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
 
       particle.style.setProperty(
         '--duration',
@@ -293,4 +307,46 @@
 
       particle.style.setProperty(
         '--delay',
-        `${-Math.random
+        `${-Math.random() * 20}s`
+      );
+
+      particle.style.setProperty(
+        '--drift',
+        `${Math.random() * 100 - 50}px`
+      );
+
+      layer.appendChild(particle);
+    }
+
+    document.body.prepend(layer);
+  }
+
+  /*
+   * 5. INITIALISATION
+   */
+
+  function initializeSurprise() {
+    createPetals();
+    createParticles();
+
+    if (openButton && letter) {
+      openButton.setAttribute('aria-controls', 'letter');
+      openButton.setAttribute('aria-expanded', 'false');
+    }
+
+    if (musicButton) {
+      musicButton.setAttribute('aria-pressed', 'false');
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener(
+      'DOMContentLoaded',
+      initializeSurprise,
+      { once: true }
+    );
+  } else {
+    initializeSurprise();
+  }
+
+})();
