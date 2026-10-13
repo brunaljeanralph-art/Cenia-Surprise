@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff7f8">
+  <meta name="description" content="Une petite surprise d’anniversaire pour Cénia, préparée avec attention par Mr. Ralph.">
+  <title>Pour Cénia, en ce jour qui t’appartient</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="glow glow-one" aria-hidden="true"></div>
+  <div class="glow glow-two" aria-hidden="true"></div>
+  <div class="petal-field" id="petalField" aria-hidden="true"></div>
+
+  <main class="page-shell">
+    <header class="intro">
+      <p class="eyebrow">Un petit moment rien que pour toi</p>
+      <h1>Pour <span>Cénia</span>,<br>en ce jour qui t’appartient.</h1>
+      <p class="intro-copy">Certaines attentions n’ont pas besoin d’être grandes pour être sincères. 🌹</p>
+    </header>
+
+    <section class="surprise-card" aria-labelledby="surprise-title">
+      <p class="card-kicker">Une surprise préparée avec le cœur</p>
+      <h2 id="surprise-title">Un petit mot pour toi</h2>
+      <p class="instruction">Prends une petite seconde… puis ouvre ton enveloppe.</p>
+
+      <div class="envelope-stage">
+        <div class="envelope" id="envelope" aria-label="Enveloppe rose fermée">
+          <div class="envelope-back"></div>
+          <article class="letter-preview" aria-hidden="true">
+            <span class="preview-heart">♡</span>
+            <span>Pour Cénia</span>
+            <small>Avec douceur</small>
+          </article>
+          <div class="envelope-front"></div>
+          <div class="envelope-flap"></div>
+          <div class="envelope-seal" aria-hidden="true">♡</div>
+        </div>
+      </div>
+
+      <button class="primary-button" id="openButton" type="button" aria-controls="letter" aria-expanded="false">
+        Ouvrir ma surprise <span aria-hidden="true">♡</span>
+      </button>
+      <p class="tiny-note">À lire tranquillement, sans aucune pression.</p>
+
+      <section class="letter-panel" id="letter" aria-labelledby="letter-title" hidden>
+        <div class="letter-paper">
+          <div class="letter-ornament" aria-hidden="true">❀</div>
+          <p class="letter-date">Pour ton anniversaire</p>
+          <h2 id="letter-title">Joyeux anniversaire, Cénia 🌷</h2>
+          <div class="letter-body">
+            <p>En ce jour qui est le tien, je te souhaite avant tout la santé, la paix du cœur et beaucoup de belles raisons de sourire.</p>
+            <p>Que cette nouvelle année de ta vie t’apporte de belles occasions, du courage lorsque les choses deviennent difficiles, et la force de continuer à avancer vers les rêves qui comptent vraiment pour toi.</p>
+            <p>Je te souhaite de rencontrer la sincérité, de reconnaître ta valeur même les jours où tu en doutes, et de ne jamais oublier que tu mérites le respect, la douceur et de belles choses dans ta vie.</p>
+            <p>Parfois, on comprend certains sentiments un peu tard, ou on trouve les mots après avoir beaucoup réfléchi. Mais les attentions sincères n’ont pas besoin de forcer quoi que ce soit. Je voulais simplement profiter de cette occasion pour t’adresser un mot qui vient du cœur, avec respect et sans rien attendre en retour.</p>
+            <p>Profite de ta journée, garde près de toi les personnes qui te font du bien et donne-toi la permission d’être heureuse, à ta manière et à ton rythme.</p>
+            <p class="wish-line">Que la vie te réserve de belles surprises, aujourd’hui et bien au-delà. ❤️</p>
+          </div>
+          <div class="signature">
+            <span>Avec une pensée sincère,</span>
+            <strong>Ton beau gosse,</strong>
+            <b>Mr. Ralph <span aria-hidden="true">❤️</span></b>
+          </div>
+          <div class="letter-bottom-flower" aria-hidden="true">❀</div>
+        </div>
+        <p class="closing-line">Un petit mot, simplement. 🌹</p>
+      </section>
+    </section>
+
+    <footer class="page-footer">
+      <span>Fait avec attention</span><span class="footer-heart" aria-hidden="true">♥</span><span>Pour Cénia</span>
+    </footer>
+  </main>
+
+  <aside class="music-widget" aria-label="Contrôle de la musique">
+    <button id="musicButton" class="music-button" type="button" aria-pressed="false" title="Activer ou mettre la musique en pause">
+      <span class="music-icon" aria-hidden="true">♫</span><span id="musicButtonText">Musique</span>
+    </button>
+    <p id="musicStatus" class="music-status" role="status" aria-live="polite">La musique pourra être ajoutée dans le dossier du site.</p>
+  </aside>
+
+  <audio id="backgroundMusic" loop preload="none">
+    <source src="assets/music.mp3" type="audio/mpeg">
+  </audio>
+</body>
+</html>
